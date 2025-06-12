@@ -1165,7 +1165,8 @@
     <script>
         console.log('InnovateHub script loading...');
 
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // API Configuration - THIS HAS BEEN UPDATED TO YOUR LIVE RENDER URL
+        const API_BASE_URL = 'https://nexushub-939w.onrender.com/api';
         
         let currentUser = null;
         let posts = [];
@@ -1189,7 +1190,6 @@
 
             try {
                 const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-                // Check if response is OK before trying to parse JSON
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({ message: response.statusText }));
                     throw new Error(errorData.message || 'API call failed');
@@ -1197,7 +1197,7 @@
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error(`FRONTEND ERROR: API call to ${endpoint} failed:`, error); // Enhanced frontend logging
+                console.error(`FRONTEND ERROR: API call to ${endpoint} failed:`, error);
                 throw error;
             }
         }
@@ -1500,7 +1500,7 @@
                     }
                     fetchTrendingTopics();
                 } catch (error) {
-                    console.error('Failed to create post:', error); // Debugging log
+                    console.error('Failed to create post:', error);
                     showToast('Failed to create post: ' + error.message, 'error');
                 }
             };
@@ -1523,7 +1523,7 @@
                 };
 
                 reader.onerror = function(error) {
-                    console.error('Error reading file for post upload:', error); // Debugging log
+                    console.error('Error reading file for post upload:', error);
                     showToast('Failed to read file for upload.', 'error');
                 };
             } else {
@@ -1535,13 +1535,13 @@
             const postsContainer = document.getElementById('postsContainer');
             postsContainer.innerHTML = '<div class="loading-spinner"></div>';
             try {
-                console.log('FRONTEND: Attempting to fetch posts...'); // Debugging log
+                console.log('FRONTEND: Attempting to fetch posts...');
                 const data = await apiCall(`/posts${query ? `?search=${query}` : ''}`);
                 posts = data.posts;
                 renderPosts();
-                console.log('FRONTEND: Posts fetched and rendered successfully.'); // Debugging log
+                console.log('FRONTEND: Posts fetched and rendered successfully.');
             } catch (error) {
-                console.error('FRONTEND ERROR: Failed to load posts:', error); // Debugging log
+                console.error('FRONTEND ERROR: Failed to load posts:', error);
                 postsContainer.innerHTML = '<p class="text-center text-muted">Failed to load posts. Please try again later.</p>';
             }
         }
@@ -1681,11 +1681,13 @@
             const myNotesContainer = document.getElementById('myNotesContainer');
             myNotesContainer.innerHTML = '<div class="loading-spinner"></div>';
             try {
+                console.log('FRONTEND: Attempting to fetch notes...');
                 const data = await apiCall('/notes');
                 notes = data.notes;
                 renderNotes();
+                console.log('FRONTEND: Notes fetched and rendered successfully.');
             } catch (error) {
-                console.error('FRONTEND ERROR: Failed to load notes:', error); // Debugging log
+                console.error('FRONTEND ERROR: Failed to load notes:', error);
                 myNotesContainer.innerHTML = '<p class="text-center text-muted">No notes found. Create your first note!</p>';
             }
         }
@@ -1848,7 +1850,7 @@
             const container = forMainSection ? document.getElementById('allDeadlinesContainer') : document.getElementById('deadlinesList');
             container.innerHTML = '<div class="loading-spinner"></div>';
             try {
-                console.log('FRONTEND: Attempting to fetch deadlines...'); // Debugging log
+                console.log('FRONTEND: Attempting to fetch deadlines...');
                 const data = await apiCall('/deadlines');
                 const fetchedDeadlines = data.deadlines;
 
@@ -1859,9 +1861,9 @@
                     const upcoming = fetchedDeadlines.filter(d => new Date(d.dueDate) >= new Date()).slice(0, 5);
                     renderSidebarDeadlines(upcoming);
                 }
-                console.log('FRONTEND: Deadlines fetched and rendered successfully.'); // Debugging log
+                console.log('FRONTEND: Deadlines fetched and rendered successfully.');
             } catch (error) {
-                console.error('FRONTEND ERROR: Failed to load deadlines:', error); // Debugging log
+                console.error('FRONTEND ERROR: Failed to load deadlines:', error);
                 container.innerHTML = '<p class="text-muted small">No upcoming deadlines or failed to load.</p>';
             }
         }
@@ -1956,7 +1958,7 @@
             sidebarStudyGroupsList.innerHTML = '<div class="loading-spinner"></div>';
 
             try {
-                console.log('FRONTEND: Attempting to fetch study groups...'); // Debugging log
+                console.log('FRONTEND: Attempting to fetch study groups...');
                 const endpoint = myGroupsOnly ? '/groups?myGroups=true' : '/groups';
                 const data = await apiCall(endpoint);
                 studyGroups = data.groups;
@@ -1965,7 +1967,7 @@
 
                 const sidebarGroups = data.groups.slice(0, 5);
                 renderSidebarStudyGroups(sidebarGroups);
-                console.log('FRONTEND: Study groups fetched and rendered successfully.'); // Debugging log
+                console.log('FRONTEND: Study groups fetched and rendered successfully.');
 
                 if (myGroupsOnly) {
                     document.getElementById('btnMyGroups').classList.add('active');
@@ -1976,7 +1978,7 @@
                 }
 
             } catch (error) {
-                console.error('FRONTEND ERROR: Failed to load study groups:', error); // Debugging log
+                console.error('FRONTEND ERROR: Failed to load study groups:', error);
                 studyGroupsContainer.innerHTML = '<p class="text-center text-muted">No study groups found. Be the first to create one!</p>';
                 sidebarStudyGroupsList.innerHTML = '<p class="text-muted small">No active study groups.</p>';
             }
@@ -2100,17 +2102,17 @@
             document.getElementById('chatFile').value = '';
 
             try {
-                console.log(`FRONTEND: Attempting to open chat for group ${groupId}...`); // Debugging log
+                console.log(`FRONTEND: Attempting to open chat for group ${groupId}...`);
                 const groupData = await apiCall(`/groups/${groupId}`);
                 const group = groupData.group;
 
                 document.getElementById('groupChatTitle').textContent = `Chat: ${group.name}`;
                 renderGroupMessages(group.messages, group.creator._id);
                 showGroupChatModal();
-                console.log(`FRONTEND: Chat for group ${groupId} opened successfully.`); // Debugging log
+                console.log(`FRONTEND: Chat for group ${groupId} opened successfully.`);
 
             } catch (error) {
-                console.error('FRONTEND ERROR: Failed to open group chat:', error); // Debugging log
+                console.error('FRONTEND ERROR: Failed to open group chat:', error);
                 showToast('Failed to open chat: ' + error.message, 'error');
                 groupChatModal.hide();
             }
@@ -2194,7 +2196,7 @@
 
             const sendActualMessage = async () => {
                 try {
-                    console.log('FRONTEND: Attempting to send message...'); // Debugging log
+                    console.log('FRONTEND: Attempting to send message...');
                     const response = await apiCall(`/groups/${currentGroupChatId}/messages`, {
                         method: 'POST',
                         body: JSON.stringify({
@@ -2212,9 +2214,9 @@
                     messageInput.value = '';
                     document.getElementById('chatFile').value = '';
                     showToast('Message sent!', 'success');
-                    console.log('FRONTEND: Message sent successfully.'); // Debugging log
+                    console.log('FRONTEND: Message sent successfully.');
                 } catch (error) {
-                    console.error('FRONTEND ERROR: Failed to send message:', error); // Debugging log
+                    console.error('FRONTEND ERROR: Failed to send message:', error);
                     showToast('Failed to send message: ' + error.message, 'error');
                 }
             };
@@ -2235,7 +2237,7 @@
                     await sendActualMessage();
                 };
                 reader.onerror = function(error) {
-                    console.error('Error reading file for chat upload:', error); // Debugging log
+                    console.error('Error reading file for chat upload:', error);
                     showToast('Failed to read file for upload.', 'error');
                 };
             } else {
@@ -2260,7 +2262,7 @@
             const trendingTopicsDiv = document.getElementById('trendingTopics');
             trendingTopicsDiv.innerHTML = '<div class="loading-spinner"></div>';
             try {
-                console.log('FRONTEND: Attempting to fetch trending topics...'); // Debugging log
+                console.log('FRONTEND: Attempting to fetch trending topics...');
                 const data = await apiCall('/posts/trending'); 
                 const trendingTopics = data.trends;
 
@@ -2279,9 +2281,9 @@
                     `;
                     trendingTopicsDiv.appendChild(topicElement);
                 });
-                console.log('FRONTEND: Trending topics fetched and rendered successfully.'); // Debugging log
+                console.log('FRONTEND: Trending topics fetched and rendered successfully.');
             } catch (error) {
-                console.error("FRONTEND ERROR: Failed to fetch trending topics:", error); // Debugging log
+                console.error("FRONTEND ERROR: Failed to fetch trending topics:", error);
                 trendingTopicsDiv.innerHTML = '<p class="text-muted small">Could not load trending topics.</p>';
             }
         }
